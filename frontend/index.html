@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Planificador de Gastos</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #c3ecf3, #f5f7fa);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+  
+    .container {
+      max-width: 90%;
+      width: 600px;
+      background: #fff;
+      margin: 40px auto;
+      padding: 20px 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+  
+    h2, h3 {
+      text-align: center;
+      color: #333;
+    }
+  
+    input, select, button {
+      padding: 10px;
+      margin: 6px 0;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+  
+    button {
+      background: #0078d7;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+  
+    button:hover {
+      background: #005fa3;
+    }
+  
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+  
+    th, td {
+      text-align: center;
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+    }
+  
+    .alerta { color: red; font-weight: bold; }
+  
+    #ia {
+      background: #f0f9f0;
+      border-left: 4px solid #4caf50;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 15px;
+    }
+  
+    @media (max-width: 600px) {
+      .container { padding: 15px; width: 95%; }
+      input, select, button { font-size: 14px; }
+    }
+  </style>
+  
+</head>
+<body>
+  <div class="container">
+    <h2>Planificador de Gastos</h2>
+
+    <label>Ingreso total:</label>
+    <input type="number" id="income" placeholder="Ejemplo: 10000">
+
+    <h3>Agregar Apartado</h3>
+    <input type="text" id="category" placeholder="Ejemplo: Comida">
+    <input type="number" id="percent" placeholder="Porcentaje (%)">
+    <button onclick="addCategory()">Agregar apartado</button>
+
+    <table id="categoriesTable">
+      <thead>
+        <tr><th>Categoría</th><th>Porcentaje</th><th>Presupuesto ($)</th><th>Gasto Actual ($)</th><th></th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <h3>Registrar Gasto</h3>
+    <select id="selectCategory"></select>
+    <input type="number" id="expense" placeholder="Monto del gasto">
+    <button onclick="addExpense()">Registrar gasto</button>
+
+    <p id="msg"></p>
+    <p id="ia"></p>
+
+    <hr>
+    <button onclick="getIASuggestion()">Sugerencia de IA</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
