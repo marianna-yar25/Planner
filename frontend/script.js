@@ -3,7 +3,7 @@
 // ====================================
 
 //   BACKEND EN RENDER
-const backendURL = "https://planificador-gastos.onrender.com";
+const backendURL = "https://planner-1-ndao.onrender.com";
 
 // --- CARGA AUTOMÁTICA DE DATOS ---
 window.addEventListener("load", () => {
