@@ -1,87 +1,165 @@
-let categories = [];
+// ====================================
+//  PLANIFICADOR DE GASTOS COMPLETO
+// ====================================
 
-function updateCategoryList() {
-  const tableBody = document.querySelector("#categoriesTable tbody");
-  const select = document.getElementById("selectCategory");
-  tableBody.innerHTML = "";
-  select.innerHTML = "";
+//   BACKEND EN RENDER
+const backendURL = "https://planificador-gastos.onrender.com";
 
-  const income = parseFloat(document.getElementById("income").value) || 0;
+// --- CARGA AUTOMÁTICA DE DATOS ---
+window.addEventListener("load", () => {
+  const data = loadFromLocalStorage();
+  if (data) {
+    document.getElementById("income").value = data.income;
+    data.categories.forEach(cat => {
+      addCategoryToTable(cat.name, cat.percent, cat.spent);
+    });
+  }
+});
 
-  categories.forEach((cat, i) => {
-    const budget = (income * cat.percent) / 100;
-    const row = document.createElement("tr");
-    const alerta = cat.spent > budget ? "⚠️" : "";
-
-    row.innerHTML = `
-      <td>${cat.name}</td>
-      <td>${cat.percent}%</td>
-      <td>$${budget.toFixed(2)}</td>
-      <td>$${cat.spent.toFixed(2)} ${alerta}</td>
-      <td><button onclick="removeCategory(${i})">❌</button></td>
-    `;
-
-    tableBody.appendChild(row);
-
-    const option = document.createElement("option");
-    option.value = i;
-    option.textContent = cat.name;
-    select.appendChild(option);
-  });
+// --- FUNCIONES DE LOCALSTORAGE ---
+function saveToLocalStorage(data) {
+  localStorage.setItem('plannerData', JSON.stringify(data));
+  console.log('💾 Guardado localmente');
 }
 
+function loadFromLocalStorage() {
+  const stored = localStorage.getItem('plannerData');
+  if (stored) {
+    console.log('📦 Datos cargados desde localStorage');
+    return JSON.parse(stored);
+  }
+  return null;
+}
+
+// --- AÑADIR NUEVA CATEGORÍA ---
 function addCategory() {
-  const name = document.getElementById("category").value.trim();
+  const name = document.getElementById("category").value;
   const percent = parseFloat(document.getElementById("percent").value);
-  if (!name || isNaN(percent) || percent <= 0) {
-    alert("Completa el nombre y porcentaje válido.");
+  const income = parseFloat(document.getElementById("income").value);
+
+  if (!name || isNaN(percent) || isNaN(income)) {
+    alert("Por favor, completa todos los campos antes de agregar.");
     return;
   }
 
-  categories.push({ name, percent, spent: 0 });
+  const budget = (income * percent) / 100;
+  addCategoryToTable(name, percent, 0);
+
   document.getElementById("category").value = "";
   document.getElementById("percent").value = "";
-  updateCategoryList();
+
+  updateLocalStorage();
 }
 
-function removeCategory(index) {
-  categories.splice(index, 1);
-  updateCategoryList();
+// --- FUNCIÓN AUXILIAR PARA INSERTAR EN TABLA ---
+function addCategoryToTable(name, percent, spent = 0) {
+  const income = parseFloat(document.getElementById("income").value);
+  const budget = (income * percent) / 100;
+
+  const tbody = document.querySelector("#categoriesTable tbody");
+  const row = document.createElement("tr");
+
+  row.innerHTML = `
+    <td>${name}</td>
+    <td>${percent}%</td>
+    <td>$${budget.toFixed(2)}</td>
+    <td class="spent">$${spent.toFixed(2)}</td>
+    <td><button onclick="deleteCategory(this)">❌</button></td>
+  `;
+
+  tbody.appendChild(row);
+
+  // Agregar opción al select
+  const select = document.getElementById("selectCategory");
+  const option = document.createElement("option");
+  option.value = name;
+  option.textContent = name;
+  select.appendChild(option);
 }
 
+// --- ELIMINAR CATEGORÍA ---
+function deleteCategory(btn) {
+  const row = btn.parentElement.parentElement;
+  const name = row.children[0].textContent;
+  row.remove();
+
+  // Eliminar del select
+  const select = document.getElementById("selectCategory");
+  Array.from(select.options).forEach(opt => {
+    if (opt.value === name) opt.remove();
+  });
+
+  updateLocalStorage();
+}
+
+// --- REGISTRAR GASTO ---
 function addExpense() {
-  const idx = parseInt(document.getElementById("selectCategory").value);
-  const amount = parseFloat(document.getElementById("expense").value);
+  const category = document.getElementById("selectCategory").value;
+  const expense = parseFloat(document.getElementById("expense").value);
 
-  if (isNaN(idx) || isNaN(amount) || amount <= 0) {
-    alert("Selecciona una categoría y un monto válido.");
+  if (!category || isNaN(expense) || expense <= 0) {
+    alert("Por favor selecciona una categoría y un monto válido.");
     return;
   }
 
-  categories[idx].spent += amount;
+  const rows = document.querySelectorAll("#categoriesTable tbody tr");
+  rows.forEach(row => {
+    if (row.children[0].textContent === category) {
+      const spentCell = row.querySelector(".spent");
+      const spent = parseFloat(spentCell.textContent.replace("$", ""));
+      const newSpent = spent + expense;
+      spentCell.textContent = `$${newSpent.toFixed(2)}`;
+    }
+  });
+
   document.getElementById("expense").value = "";
-  updateCategoryList();
+  updateLocalStorage();
 }
 
+// --- ACTUALIZAR LOCALSTORAGE CON DATOS ACTUALES ---
+function updateLocalStorage() {
+  const income = parseFloat(document.getElementById("income").value) || 0;
+  const rows = document.querySelectorAll("#categoriesTable tbody tr");
+
+  const categories = Array.from(rows).map(row => ({
+    name: row.children[0].textContent,
+    percent: parseFloat(row.children[1].textContent.replace("%", "")),
+    spent: parseFloat(row.children[3].textContent.replace("$", ""))
+  }));
+
+  const data = { income, categories };
+  saveToLocalStorage(data);
+}
+
+// --- IA FUNCIONAL ---
 async function getIASuggestion() {
-    const income = parseFloat(document.getElementById("income").value);
-    const ia = document.getElementById("ia");
-    ia.textContent = "Consultando IA...";
-    ia.style.color = "gray";
-  
-    try {
-      const res = await fetch('http://127.0.0.1:3000/ia', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ income, categories })
-      });
-  
-      const data = await res.json();
-      ia.style.color = "#333";
-      ia.textContent = data.suggestion;
-    } catch {
-      ia.style.color = "red";
-      ia.textContent = "Error de conexión con el servidor.";
-    }
+  const income = parseFloat(document.getElementById("income").value);
+  const rows = document.querySelectorAll("#categoriesTable tbody tr");
+
+  if (!income || rows.length === 0) {
+    alert("Agrega tu ingreso y al menos una categoría antes de usar la IA.");
+    return;
   }
-  
+
+  const categories = Array.from(rows).map(row => ({
+    name: row.children[0].textContent,
+    percent: parseFloat(row.children[1].textContent.replace("%", "")),
+    spent: parseFloat(row.children[3].textContent.replace("$", ""))
+  }));
+
+  try {
+    const res = await fetch(`${backendURL}/ia`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ income, categories })
+    });
+
+    if (!res.ok) throw new Error("Error al obtener sugerencia");
+
+    const result = await res.json();
+    document.getElementById("ia").textContent = result.suggestion;
+  } catch (err) {
+    console.error(err);
+    document.getElementById("ia").textContent = " Error al conectar con la IA.";
+  }
+}
