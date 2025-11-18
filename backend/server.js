@@ -1,5 +1,5 @@
-import express from "express";
-import cors from "cors";
+const express = require("express");
+const cors = require("cors");
 
 const app = express();
 app.use(cors());
@@ -7,10 +7,10 @@ app.use(express.json());
 
 // Prueba rápida
 app.get("/", (req, res) => {
-  res.send("Servidor del planificador de gastos activo ");
+  res.send("Servidor del planificador de gastos activo");
 });
 
-//  Ruta de la IA — analiza los gastos y da sugerencias
+// Ruta de la IA
 app.post("/ia", (req, res) => {
   const { income, categories } = req.body;
 
@@ -25,11 +25,11 @@ app.post("/ia", (req, res) => {
   let msg = `Ingreso total: $${income}. Has gastado $${totalSpent.toFixed(2)}.`;
 
   if (over.length > 0) {
-    msg += `Cuidado: estás excediendo el presupuesto en ${over.map(c => c.name).join(', ')}.`;
+    msg += ` Cuidado: estás excediendo el presupuesto en ${over.map(c => c.name).join(', ')}.`;
   }
 
   if (under.length > 0) {
-    msg += `Consejo: podrías destinar más fondos a ${under.map(c => c.name).join(', ')}.`;
+    msg += ` Consejo: podrías destinar más fondos a ${under.map(c => c.name).join(', ')}.`;
   }
 
   if (over.length === 0 && under.length === 0) {

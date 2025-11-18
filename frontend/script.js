@@ -2,7 +2,7 @@
 // PLANIFICADOR DE GASTOS COMPLETO
 // ====================================
 
-
+// BACKEND EN RENDER
 const backendURL = "https://planner-1-ndao.onrender.com";
 
 // --- CARGA AUTOMÁTICA DE DATOS ---
@@ -25,7 +25,7 @@ function saveToLocalStorage(data) {
 function loadFromLocalStorage() {
   const stored = localStorage.getItem('plannerData');
   if (stored) {
-    console.log(' Datos cargados desde localStorage');
+    console.log('Datos cargados desde localStorage');
     return JSON.parse(stored);
   }
   return null;
@@ -42,7 +42,6 @@ function addCategory() {
     return;
   }
 
-  const budget = (income * percent) / 100;
   addCategoryToTable(name, percent, 0);
 
   document.getElementById("category").value = "";
@@ -107,8 +106,7 @@ function addExpense() {
     if (row.children[0].textContent === category) {
       const spentCell = row.querySelector(".spent");
       const spent = parseFloat(spentCell.textContent.replace("$", ""));
-      const newSpent = spent + expense;
-      spentCell.textContent = `$${newSpent.toFixed(2)}`;
+      spentCell.textContent = `$${(spent + expense).toFixed(2)}`;
     }
   });
 
@@ -116,7 +114,7 @@ function addExpense() {
   updateLocalStorage();
 }
 
-// --- ACTUALIZAR LOCALSTORAGE CON DATOS ACTUALES ---
+// --- ACTUALIZAR LOCALSTORAGE ---
 function updateLocalStorage() {
   const income = parseFloat(document.getElementById("income").value) || 0;
   const rows = document.querySelectorAll("#categoriesTable tbody tr");
