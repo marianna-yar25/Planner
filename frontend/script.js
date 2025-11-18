@@ -1,8 +1,8 @@
 // ====================================
-// PLANIFICADOR DE GASTOS COMPLETO
+//       PLANIFICADOR DE GASTOS
 // ====================================
 
-// BACKEND EN RENDER
+// --- BACKEND EN RENDER ---
 const backendURL = "https://planner-1-ndao.onrender.com";
 
 // --- CARGA AUTOMÁTICA DE DATOS ---
@@ -82,7 +82,6 @@ function deleteCategory(btn) {
   const name = row.children[0].textContent;
   row.remove();
 
-  // Eliminar del select
   const select = document.getElementById("selectCategory");
   Array.from(select.options).forEach(opt => {
     if (opt.value === name) opt.remove();
@@ -106,7 +105,8 @@ function addExpense() {
     if (row.children[0].textContent === category) {
       const spentCell = row.querySelector(".spent");
       const spent = parseFloat(spentCell.textContent.replace("$", ""));
-      spentCell.textContent = `$${(spent + expense).toFixed(2)}`;
+      const newSpent = spent + expense;
+      spentCell.textContent = `$${newSpent.toFixed(2)}`;
     }
   });
 
@@ -125,8 +125,7 @@ function updateLocalStorage() {
     spent: parseFloat(row.children[3].textContent.replace("$", ""))
   }));
 
-  const data = { income, categories };
-  saveToLocalStorage(data);
+  saveToLocalStorage({ income, categories });
 }
 
 // --- IA FUNCIONAL ---
@@ -151,8 +150,6 @@ async function getIASuggestion() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ income, categories })
     });
-
-    if (!res.ok) throw new Error("Error al obtener sugerencia");
 
     const result = await res.json();
     document.getElementById("ia").textContent = result.suggestion;
