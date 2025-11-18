@@ -16,47 +16,46 @@
 
   <script>
     const backendURL = "https://planner-1-ndao.onrender.com";
+  
     async function login() {
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
       const msg = document.getElementById('msg');
-
+  
       msg.style.color = 'gray';
       msg.textContent = 'Conectando al servidor...';
-
+  
       try {
         const res = await fetch(`${backendURL}/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
         });
-
-        if (!res.ok) {
-          msg.style.color = 'red';
-          msg.textContent = 'Error en la conexión (' + res.status + ')';
-          return;
-        }
-
+  
         const data = await res.json();
-        console.log('Respuesta del servidor:', data);
-
-        if (data.success) {
+        console.log("Respuesta del servidor:", data);
+  
+        if (res.ok) {
           msg.style.color = 'green';
           msg.textContent = 'Ingreso exitoso. Redirigiendo...';
+  
           localStorage.setItem('user', username);
+  
           setTimeout(() => {
             window.location.href = 'index.html';
           }, 1000);
+  
         } else {
           msg.style.color = 'red';
-          msg.textContent = data.message || 'Usuario o contraseña incorrectos.';
+          msg.textContent = data.message || "Usuario o contraseña incorrectos.";
         }
+  
       } catch (error) {
-        console.error('Error de conexión:', error);
+        console.error("Error de conexión:", error);
         msg.style.color = 'red';
-        msg.textContent = 'No se pudo conectar al servidor.';
+        msg.textContent = "No se pudo conectar al servidor.";
       }
     }
-  </script>
+  </script>  
 </body>
 </html>
