@@ -15,6 +15,7 @@
   </div>
 
   <script>
+    const backendURL = "https://planner-1-ndao.onrender.com";
     async function login() {
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
@@ -24,7 +25,7 @@
       msg.textContent = 'Conectando al servidor...';
 
       try {
-        const res = await fetch('http://127.0.0.1:3000/login', {
+        const res = await fetch(`${backendURL}/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })

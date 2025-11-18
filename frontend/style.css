@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f5f6fa;
+    background-color: #fffefa;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -8,7 +8,7 @@ body {
   }
   
   .container {
-    background: white;
+    background: #ffffff;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.2);
@@ -26,13 +26,13 @@ body {
   }
   
   button {
-    background: #4CAF50;
-    color: white;
+    background: #e9aeff;
+    color: rgb(255, 255, 255);
     border: none;
     cursor: pointer;
   }
   
   button:hover {
-    background: #45a049;
+    background: #e9aeff;
   }
   
