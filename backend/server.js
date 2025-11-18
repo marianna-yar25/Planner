@@ -1,5 +1,5 @@
-import express from "express";
-import cors from "cors";
+const express = require("express");
+const cors = require("cors");
 
 const app = express();
 app.use(cors());
@@ -25,11 +25,11 @@ app.post("/ia", (req, res) => {
   let msg = `Ingreso total: $${income}. Has gastado $${totalSpent.toFixed(2)}.`;
 
   if (over.length > 0) {
-    msg += `Cuidado: estás excediendo el presupuesto en ${over.map(c => c.name).join(', ')}.`;
+    msg += ` Cuidado: estás excediendo el presupuesto en ${over.map(c => c.name).join(', ')}.`;
   }
 
   if (under.length > 0) {
-    msg += `Consejo: podrías destinar más fondos a ${under.map(c => c.name).join(', ')}.`;
+    msg += ` Consejo: podrías destinar más fondos a ${under.map(c => c.name).join(', ')}.`;
   }
 
   if (over.length === 0 && under.length === 0) {
